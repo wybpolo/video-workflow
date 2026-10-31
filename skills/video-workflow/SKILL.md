@@ -3,7 +3,7 @@ name: video-workflow
 description: "视频制作总工作流（路由+管线）：用户给文本主题、图片或视频素材时，按内容选唯一路线——艺术/解说动画走 huashu-art-motion，通用设计/数据/产品片走 HyperFrames，技术图解素材走 anatomy，图表先过 dataviz，全自动口播短视频走 MoneyPrinterTurbo，实拍感片段走原生 AI 视频生成，精修交付走 pyJianYingDraft 剪映草稿；配音/字幕/拼接/质检在本技能内统一。避免多引擎重合：一个项目只选一条主路线。"
 metadata:
   author: "kis (for bingkis)"
-  version: "1.0.0"
+  version: "1.1.0"
   created: "2026-10-31"
 ---
 
@@ -40,6 +40,19 @@ metadata:
 7. **质检**：抽帧看（每镜至少 1 帧）：文字出界/叠字/字太小、空画面、画风漂移；A 路线必须过 huashu 的 `qa.py`+`deliver.py` 反 PPT 门禁。整片用正常速度看一遍再交付。
 8. **交付**：成片 MP4 放 `video-studio/output/<项目名>/`，附一段制作说明（路线、时长、规格、用了哪些素材/音色）。用户要精修再走 G 路线出剪映草稿。
 
+## PPT / 文档转视频（实证流程，2026-10-31 比亚迪 T5 教程 4分30秒成片跑通）
+
+用户给 PPT/PDF 手册类素材做教程片时走 B 路线，按下面顺序做，每条都是这次踩过或验过的：
+
+1. **拆解**：PyMuPDF（`uv run --with pymupdf`）双路提取——逐页渲染图（110dpi，看版式）+ 提取内嵌原图（≥500px 才留）。先把候选图拼 contact sheet 肉眼选材和对位（哪张图配哪节内容），再动设计。PPT 页渲染图只用于理解，**绝不整页当画面**（那是翻页 PPT，不是视频）；用提取的原图/编号图解进重新设计的场景。
+2. **核事实**：手册/PPT 内部数据常有占位（「待补充」）和版本对位错误（这次车型代码与电量三页互相矛盾）。关键数字必须与公开来源交叉核对，矛盾处取多源一致值，并把取舍留在项目记录里。
+3. **先配音、后定时**（最重要）：按场景切口播稿 → 逐场 TTS → ffprobe 实测每场时长 → 场景时长 = 0.4s 头垫 + 配音 + 0.9s 尾垫，累加得全片时间轴。配音轨用 ffmpeg 把「静音+配音+静音」逐场拼接，与画面天然对齐；字幕按句切分、按字数比例分配场内时间（44 条字幕实测可用），比 whisper 转写更快更准（稿子就是原文）。
+4. **生成器模式**：十场以上的片子不要手写 HTML——写一个 gen.py（场景内容用数据结构描述），一次生成 index.html + plan.json + SRT + 配音拼接命令。改版式只改生成器重跑，时间轴永远以实测配音为准。
+5. **字幕安全区**：烧录字幕占底部约 130px。所有卡片/图注必须收在 y≈920 以上；封面底部数据条、右列最后的提示卡是最容易被字幕压住/裁掉的两处（这次首检三处缺陷全在这里）。纵向列排版先估总高再落位。
+6. **大数字排版**：核心数字单独成行 + `white-space:nowrap`，单位/区间放标签行；「30%→80% ≈18分钟」这类长串同行必折行毁版。
+7. **长片分段视觉**：单场配音 >30s 时场内做两段视觉相位（如充电→保养），在配音约 52% 处交叉淡化切换，避免一幅画面挂到底。
+8. **质检闭环**：渲染后抽每场中点帧 + 相位切换点帧，拼图总览逐项看（压字/裁切/折行/空场），修完重渲再抽查修改场。这次一轮修复解决全部缺陷，不要省这一轮。
+
 ## 已验证的环境事实（2026-10-31 实测，别重新踩）
 
 - ffmpeg 8.1.2、Node 24、Python 3.12、uv（`~/.local/bin/uv`）齐全；中文字体 Noto CJK 已装。
@@ -48,6 +61,8 @@ metadata:
 - MoneyPrinterTurbo 已 clone 到 `video-studio/apps/MoneyPrinterTurbo` 并装好依赖 venv；未配置 key 时不要假装能跑通全流程。
 - HyperFrames 渲染已实测成功（默认模板 10s 1080p），本 VM 必须带三个条件：① `TMPDIR=~/workspace/video-studio/.tmp`（/tmp 只有 512MB，渲染会报 Low disk space）；② `HYPERFRAMES_BROWSER_PATH=~/.cache/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-linux64/chrome-headless-shell`；③ **GSAP 等库必须本地化**：模板默认引 cdn.jsdelivr.net，在本网络会挂（与用户本机屏蔽 jsdelivr 同理）——从 registry.npmmirror.com 下 tarball，把 gsap.min.js 放进项目 assets/ 并改成本地引用。走 screenshot capture 路径较慢（约 2-3 倍时长），属正常。
 - faster-whisper 已实测转写成功：venv 里必须钉 `av<19`（faster-whisper 与 PyAV≥19 不兼容，MoneyPrinterTurbo 的 requirements 同理）；模型走 HF_ENDPOINT=https://hf-mirror.com 下载，tiny 已缓存（质量差，仅冒烟），正式转写用 base 以上。
+- HyperFrames 长片（270s/8117 帧）实测：截图捕获约 2.6 倍片长（≈12 分钟），属正常，别中途杀。**渲染进程 exit 0 ≠ 文件完好**：曾出现输出 MP4 只有 mdat 没有 moov（被截断在整 22MiB 处）——渲染后必须 ffprobe 验时长/流再继续；失败时删掉项目下的 `work-*` 与 `.film_*.hf-transaction-*` 残留再重渲。`hyperframes check` 顶层报 failed 时先看 lint 明细：0 error 只有 warning（多场单文件、嵌套结构）可正常渲染。
+- HyperFrames 字体：CSS 里写 CJK 字体名必须配本地 @font-face，否则 check 直接 error 且渲染回退默认字体。本机做法：fonttools+brotli 从 `/usr/share/fonts/opentype/noto/NotoSansCJK-{Regular,Bold}.ttc` 取 SC 面（fontNumber=2）转 woff2（各约 11MB）放项目 assets/fonts/，@font-face 按 400/700/800 声明。转换约需 3 分钟，放后台跑。
 - 原生视频生成：每条约 10 秒、单次最多 6 条、自带声音、不收音频输入（不能指定现成歌曲，只能用文字描述音乐氛围）。
 
 ## 待配置（需要用户给 key 才能启用，不阻塞其他路线）

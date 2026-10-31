@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.0 — 2026-10-31
+
+首次真实生产（比亚迪 T5 教程，4分30秒 1080p）经验回写：
+
+- 总控技能新增「PPT / 文档转视频」实证流程（8 条）：PyMuPDF 双路拆解 + contact sheet 选材、关键数字多源核对、先配音后定时的场景时间轴（0.4+实测+0.9）、按句比例字幕、gen.py 生成器模式、字幕安全区（内容收在 y≈920 以上）、大数字 nowrap 排版、长场双相位、抽帧质检闭环
+- 环境事实补三条：HyperFrames 长片渲染约 2.6 倍片长且 exit 0 也可能截断（必须 ffprobe 验文件、清 work-*/.hf-transaction-* 残留重渲）；check 顶层 failed 先看 lint 明细（0 error 可渲）；CJK 字体必须本地 @font-face（fonttools 从 Noto TTC 取 SC 面转 woff2 的做法）
+
 ## v1.0.0 — 2026-10-31
 
 首个版本：调研选型 + 全路线实测打通后建仓。
