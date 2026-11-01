@@ -17,6 +17,20 @@
 | 字幕/转写 | faster-whisper + SRT/ASS 烧录 | 已装进 .venv；模型首次下载较慢（本 VM 网络），自备口播稿时直接按稿对齐出字幕，不依赖转写 |
 | 生成式实拍片段 | Muse 原生视频生成（约10秒/条、自带声音、单次≤6条） | 外部备选 Runway Dev API（一个 key 聚合 Veo/Kling/Seedance，需付费 key）。**Sora API 已下线（2026-09-24），别再考虑** |
 
+## 生成后端与环境差异（重要，别搞混）
+
+- **在 muse.ai（当前 Muse 环境）内**：视频生成与图片生成都是内置原生能力，**免 key 直接可用**。视频约 10 秒/条、单次最多 6 条、自带声音、可按提示词让角色说指定台词；图片生成要善用——角色锚图、分镜参考图、概念图、贴图等素材缺口优先用它补位，再进合成或视频生成。
+- **在外部环境**（本地 Claude Code、其他 agent 运行时）：**没有内置生成**，视频/图片生成都必须自备服务商的接口地址 + key 才能用（如 Runway Dev 聚合 Veo/Kling/Seedance、即梦/Seedance、MiniMax 云端等，见总控技能「待配置」）。没配 key 时 E/H/I 路线只能先做到分镜与提示词，不要假装已在生成。
+- TTS 是另一回事：原生 TTS 在本环境可用；edge-tts 在本云 VM 被代理掐断、Windows 本机可用（见选型表）。
+
+## 目录约定（2026-11-01 起）
+
+- `projects/` — 正式项目的工程目录（可由脚本再生成，如 byd-t5-tutorial）
+- `output/` — 新成片的临时交付落点，交付后按性质归档到下面两处
+- `tests/<YYYY-MM-DD>/` — **所有测试片/示例片/验证片**（含其工程），按日期分子目录；**每周一凌晨自动清理超过 14 天的日期目录**（scripts/cleanup_tests.sh + 定时任务），不长期占盘
+- `archive/` — **需长期存放的媒体**（正式成片等），永不自动清理。首个归档：archive/比亚迪T5使用教程/
+- 想保留某条测试片超过 14 天：把它移进 `archive/` 即可
+
 ## 没装的（及原因）
 
 - **baoyu-design 全套**：不是视频工具——是幻灯/设计画布/设计系统/仪表盘的本地编辑器技能包，和本环境自带 artifact 能力重合。只取了 dataviz。
@@ -38,7 +52,7 @@
 ## 验证记录（2026-10-31）
 
 - huashu 参数化片段（动态文字语法）渲染成功：7.5s 1080p
-- 演示成片：上述片段 + 原生 TTS 配音 + 烧录字幕 → output/demo_成片.mp4（5.8s，抽帧质检通过）
+- 演示成片：上述片段 + 原生 TTS 配音 + 烧录字幕 → tests/2026-10-31/demo_成片.mp4（5.8s，抽帧质检通过；原在 output/，2026-11-01 按目录约定迁移）
 - pyJianYingDraft 生成草稿成功：test-drafts/demo_from_workflow（视频轨+文字轨）
 - MoneyPrinterTurbo CLI --help 正常；HyperFrames 实测渲染成功（默认模板 10s 1080p，需 TMPDIR 指到家目录 + HYPERFRAMES_BROWSER_PATH 指到 Playwright 无头 Chrome + GSAP 本地化，jsdelivr 在本网络不可用）
 - faster-whisper 实测转写成功（需钉 av<19，模型走 hf-mirror；tiny 仅冒烟，正式用 base+）
