@@ -15,6 +15,8 @@ HUASHU_SHA=8a0d7d72ca65fcce6f8ba82c4a6c8dfe35b8422c
 ANATOMY_SHA=1482e8469b0a9e0d8cc18ea2740a01423d29ae80
 HF_SHA=a04b45a6db0d1f724be9cf1985c3b13657195f0d
 MPT_SHA=8dbfbb8e9de1b8f9d745d73a8e9f07464248cdd9
+SHUOHAO_SHA=5612d2a0bd5f19d978c3ee19d1e42840335e3b4b
+# motion-prompt 已全量 vendored（3 个文本文件），无需克隆恢复
 
 mkdir -p "$SKILLS_DST" "$STUDIO"/{scripts,projects,output,apps,.tmp}
 
@@ -40,6 +42,10 @@ rsync -a --exclude='.git' "$TMPCLONE/anatomy/" "$SKILLS_DST/anatomy/"
 clone_pinned https://github.com/heygen-com/hyperframes.git "$HF_SHA" "$TMPCLONE/hf"
 for s in hyperframes hyperframes-cli hyperframes-registry media-use; do
   rsync -a "$TMPCLONE/hf/skills/$s/" "$SKILLS_DST/$s/"   # 覆盖 vendored 副本，补齐二进制资源
+done
+clone_pinned https://github.com/eternityspring/shuohao-skills.git "$SHUOHAO_SHA" "$TMPCLONE/shuohao"
+for s in character-refs novel-art novel-characters novel-outline novel-script novel-staging novel-storyboard; do
+  rsync -a "$TMPCLONE/shuohao/skills/$s/" "$SKILLS_DST/$s/"   # 覆盖 vendored 副本，补齐报告截图
 done
 rm -rf "$TMPCLONE"
 

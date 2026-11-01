@@ -1,4 +1,4 @@
-# 上游锁定清单（2026-10-31 验证）
+# 上游锁定清单（2026-11-01 更新）
 
 install.sh 按下表 commit 拉取/恢复。升级上游时先改这里、验证、再升本仓版本。
 
@@ -8,6 +8,9 @@ install.sh 按下表 commit 拉取/恢复。升级上游时先改这里、验证
 | anatomy | github.com/wheresryan22/anatomy | 1482e8469b0a9e0d8cc18ea2740a01423d29ae80 | MIT | 不 vendored（27MB，含图片）；install.sh clone 后 checkout |
 | HyperFrames 技能 | github.com/heygen-com/hyperframes（skills/ 子目录） | a04b45a6db0d1f724be9cf1985c3b13657195f0d | Apache-2.0 | 文本部分 vendored 在 skills/ 下（已核对 SKILL.md 与该 commit 字节一致）；排除的二进制：hyperframes 的 6 个 .woff2 字体、media-use 的 19 个 .mp3 音效——install.sh 从上游补齐完整目录，覆盖 vendored 副本 |
 | dataviz | github.com/JimLiu/baoyu-design（skills/dataviz） | 25f1c06c4d7c6619aa7c3ded96302c9e5f2ac847 | MIT | 全量 vendored（10 个文本文件） |
+| shuohao-skills（短剧流水线 7 技能） | github.com/eternityspring/shuohao-skills（skills/ 子目录） | 5612d2a0bd5f19d978c3ee19d1e42840335e3b4b | Apache-2.0 | 文本部分 vendored 在 skills/ 下（novel-outline/characters/art/script/staging/storyboard + character-refs）；排除的二进制：各技能 assets/ 的 report.webp/jpg 报告截图——install.sh 从上游补齐完整目录，覆盖 vendored 副本。各技能自带 selftest 已实测通过（storyboard 336 项、script 154 项） |
+| motion-prompt | github.com/showheyohtaki/motion-prompt（skills/motion-prompt） | 7819d3879eb7d5a1475c11c001bedffb5cab64af | MIT | 全量 vendored（3 个文本文件，68K）；画廊 kit 按其 SKILL.md 在使用时从官网获取 |
+| hypit | github.com/hypit-ai/hypit | —（不锁定） | 修改版 Apache-2.0（附加条件） | **不安装**：整套独立生产系统与本仓管线重合；其参考复刻方法已吸收为总控 I 路线（纯方法，零代码） |
 | MoneyPrinterTurbo | github.com/harry0703/MoneyPrinterTurbo | 8dbfbb8e9de1b8f9d745d73a8e9f07464248cdd9 | MIT | 不 vendored（独立应用）；install.sh clone 到 video-studio/apps 并装 venv |
 | pyJianYingDraft | PyPI pyJianYingDraft==0.3.1 | — | Apache-2.0 | install.sh 装进 video-studio/.venv |
 | faster-whisper | PyPI（钉 av<19） | — | MIT | 同上 |
