@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.3.0 — 2026-11-01
+
+第二批 14 个开源项目深读评估后的集成（逐仓结论见总控技能与本地评估记录）：
+
+- **新增 4 技能**：ffmpeg-skill（锁定 1ce2c18）——F 路线工具层换装为契约流程（probe→dry-run 计划→执行→check 平台规格验收）；pixelfx（a841596）——像素特效资产层（244 个代码特效，零依赖）；manimgx（技能文件锁定 1fb4dd7，引擎 uv 装 PyPI 0.1.1）——C 路线数学/3D 精密引擎（LaTeX 公式变形、真 3D；VM 无 GPU 时 lavapipe CPU 渲染实测可用）；vibe-knowledge-film（62d5150）——A 路线子路线：无旁白、字幕驱动的横屏知识长片
+- **参考层摘录**进总控 references/：lemo-opuscar 的 67 份电影风格语法 STYLE.md（bebbbe1，CC BY 4.0）+ mg-styles-15 的 15 份整片风格提示词与 rubric 双 AI 评审法（49052d8)，与 motion-prompt（单动效级）粒度互补
+- **总控新增「方法规范与参考层」**（只吸收方法、不装引擎）：解说方法（文案先行且先确认、30 秒样片门、量化 QC、whisper 字级对时、反 PPT——源自 anything2explainer + video-talkcraft，两者 PolyForm 非商业 + Remotion，禁止整装）；B 路线可测量质检与音频规则 + 反 slop 清单（motion-video-kit + motionmaxxing）；作曲模式与 data-id 指帧返修契约（huashu-motion——与 huashu-art-motion 是同作者姊妹产品，不是升级版，不替换）
+- **不采用补明**：FreeVideo 本地 H3 后端不装（用户决定不依赖本地 GPU；H3 原生规格只走云端通道）；openfilm/animate 跳过（同层重合/落地形态不合）
+- **四条示例片验证**（本地 video-studio/projects/eval2-demos/，不入库）：ffmpeg-skill 截《凌晨两点的花》v2 做响度归一过 TikTok 验收（−14.02 LUFS、14 项全过）；pixelfx 六类特效展示片（24s 720p，全部一次渲通）；manimgx 《傅里叶级数逼近方波》（720p 引擎渲染 22.5s，进程映射实锤 lavapipe）；vibe 《为什么冰会浮》30 秒样片（走完其 0–9 步流程，字体经其预留槽位用本地 Noto 顶替，−18.37 LUFS 对上其 C 世界规格）
+
 ## v1.2.0 — 2026-11-01
 
 新增短剧与复刻两条路线（用户点名评估的三个外部工作流，克隆实读后集成）：

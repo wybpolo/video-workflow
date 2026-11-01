@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# video-workflow 一键恢复脚本（v1.0.0）
+# video-workflow 一键恢复脚本（v1.3.0）
 # 用法: bash install.sh        环境变量: WORKSPACE(默认 ~/workspace)
 # 做的事: 1) 技能 -> $WORKSPACE/custom-skills  2) 管线 -> $WORKSPACE/video-studio
 #         3) 上游技能按 UPSTREAM.md 锁定 commit 克隆  4) venv 依赖
@@ -16,6 +16,10 @@ ANATOMY_SHA=1482e8469b0a9e0d8cc18ea2740a01423d29ae80
 HF_SHA=a04b45a6db0d1f724be9cf1985c3b13657195f0d
 MPT_SHA=8dbfbb8e9de1b8f9d745d73a8e9f07464248cdd9
 SHUOHAO_SHA=5612d2a0bd5f19d978c3ee19d1e42840335e3b4b
+FFMPEG_SHA=1ce2c186bf1dba96132d87274eee46df4f537e0e
+PIXELFX_SHA=a84159688af3ca37a4be05a0d422b94451b2e24e
+MANIMGX_SHA=1fb4dd7327bf5ed7d0c40d022c05cb816455ae1d
+VIBE_SHA=62d51508aad00003dc6209afa80c4b5dc540de59
 # motion-prompt 已全量 vendored（3 个文本文件），无需克隆恢复
 
 mkdir -p "$SKILLS_DST" "$STUDIO"/{scripts,projects,output,apps,.tmp}
@@ -47,12 +51,21 @@ clone_pinned https://github.com/eternityspring/shuohao-skills.git "$SHUOHAO_SHA"
 for s in character-refs novel-art novel-characters novel-outline novel-script novel-staging novel-storyboard; do
   rsync -a "$TMPCLONE/shuohao/skills/$s/" "$SKILLS_DST/$s/"   # 覆盖 vendored 副本，补齐报告截图
 done
+clone_pinned https://github.com/kajisho5/ffmpeg-skill.git "$FFMPEG_SHA" "$TMPCLONE/ffmpeg-skill"
+rsync -a --exclude='.git' "$TMPCLONE/ffmpeg-skill/" "$SKILLS_DST/ffmpeg-skill/"
+clone_pinned https://github.com/patch-gg/pixelfx.git "$PIXELFX_SHA" "$TMPCLONE/pixelfx"
+rsync -a --exclude='.git' "$TMPCLONE/pixelfx/" "$SKILLS_DST/pixelfx/"
+clone_pinned https://github.com/HeyChengC/vibe-knowledge-film.git "$VIBE_SHA" "$TMPCLONE/vibe"
+rsync -a --exclude='.git' "$TMPCLONE/vibe/" "$SKILLS_DST/vibe-knowledge-film/"
+clone_pinned https://github.com/academa-labs/manimgx.git "$MANIMGX_SHA" "$TMPCLONE/manimgx"
+rsync -a "$TMPCLONE/manimgx/skills/manimgx/" "$SKILLS_DST/manimgx/"   # 只有技能文件，引擎见 4/6 的 uv tool install
 rm -rf "$TMPCLONE"
 
 echo "== 4/6 python venv (pyJianYingDraft + faster-whisper + edge-tts) =="
 command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
 [ -d "$STUDIO/.venv" ] || uv venv "$STUDIO/.venv" --python 3.12
 uv pip install --python "$STUDIO/.venv/bin/python" pyJianYingDraft==0.3.1 faster-whisper "av<19" edge-tts pip-system-certs
+command -v manimgx >/dev/null || uv tool install --python 3.14 manimgx   # C 路线数学/3D 引擎（0.1.1；无 GPU 时自带 lavapipe CPU 兜底）
 
 echo "== 5/6 playwright chromium (npmmirror CFT 156) =="
 if [ ! -x "$HOME/.cache/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-linux64/chrome-headless-shell" ]; then

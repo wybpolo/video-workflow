@@ -3,7 +3,7 @@ name: video-workflow
 description: "视频制作总工作流（路由+管线）：用户给文本主题、图片或视频素材时，按内容选唯一路线——艺术/解说动画走 huashu-art-motion，通用设计/数据/产品片走 HyperFrames，技术图解素材走 anatomy，图表先过 dataviz，全自动口播短视频走 MoneyPrinterTurbo，实拍感片段走原生 AI 视频生成，小说/故事改短剧走 shuohao 短剧流水线，给参考视频要翻拍/复刻/批量变体走参考复刻法，精修交付走 pyJianYingDraft 剪映草稿；配音/字幕/拼接/质检在本技能内统一。避免多引擎重合：一个项目只选一条主路线。"
 metadata:
   author: "kis (for bingkis)"
-  version: "1.2.0"
+  version: "1.3.0"
   created: "2026-10-31"
 ---
 
@@ -11,24 +11,34 @@ metadata:
 
 你是导演+动画师+剪辑师。用户给「文本主题」或「图片/视频素材」，产出精美成片 MP4（可选附剪映可编辑草稿）。
 工作区：`~/workspace/video-studio/`（projects/ 放每个项目，scripts/ 放管线脚本，apps/ 放 MoneyPrinterTurbo，.venv 是 pyJianYingDraft+faster-whisper+edge-tts 环境）。
-已装技能（各管一层，不要重复造轮子）：`huashu-art-motion`、`hyperframes`+`hyperframes-cli`+`hyperframes-registry`+`media-use`、`anatomy`、`dataviz`、短剧流水线 `novel-outline`/`novel-characters`/`novel-art`/`novel-script`/`novel-staging`/`novel-storyboard`/`character-refs`（shuohao-skills，Apache-2.0，锁定 commit 见仓库 UPSTREAM.md）、动效词典 `motion-prompt`（参考层，不占路线）。
+已装技能（各管一层，不要重复造轮子）：`huashu-art-motion`、`hyperframes`+`hyperframes-cli`+`hyperframes-registry`+`media-use`、`anatomy`、`dataviz`、短剧流水线 `novel-outline`/`novel-characters`/`novel-art`/`novel-script`/`novel-staging`/`novel-storyboard`/`character-refs`（shuohao-skills，Apache-2.0，锁定 commit 见仓库 UPSTREAM.md）、动效词典 `motion-prompt`（参考层，不占路线）、`ffmpeg-skill`（F 路线契约化工具层，MIT）、`pixelfx`（像素特效资产层，MIT）、`manimgx`（C 路线数学/3D 引擎技能，引擎按需 pip 装，MIT）、`vibe-knowledge-film`（A 路线无旁白知识长片子技能，MIT）。风格参考库在本技能 `references/` 下：`lemo-styles/`（lemo-opuscar 的 67 份电影风格语法 STYLE.md，CC BY 4.0）、`mg-styles/`（mg-styles-15 的 15 份整片风格提示词 + rubric 评审法 + template，MIT）。上游锁定 commit 见仓库 UPSTREAM.md。
 
 ## 第一步：选路线（只选一条主路线）
 
 | 用户给的 / 想要的 | 路线 | 工具 |
 |---|---|---|
-| 艺术风格动画、解说科普（Kurzgesagt/Vox/白板/3b1b 风）、口播解说片、名画穿越、复刻某段动画 | A 艺术解说 | `huashu-art-motion` 技能全程（镜头表→lint→逐镜渲染→qa→deliver 门禁） |
+| 艺术风格动画、解说科普（Kurzgesagt/Vox/白板/3b1b 风）、口播解说片、名画穿越、复刻某段动画 | A 艺术解说 | `huashu-art-motion` 技能全程（镜头表→lint→逐镜渲染→qa→deliver 门禁）。子格式：无旁白、字幕驱动的横屏知识长片（2–5 分钟，抖音「知识大赏」式）走 `vibe-knowledge-film` 技能（见下「方法规范」A 子路线） |
 | 产品发布片、数据片、网页/截图讲解、标题卡、竖屏信息片、设计感 MG 动画 | B 通用设计 | HyperFrames：`npx hyperframes init` 起项目，按 `hyperframes` 技能契约写 HTML 合成，`npx hyperframes check` 后渲染 |
-| 讲清一个技术概念/机械原理，需要精密等距图解当画面主体 | C 图解素材 | `anatomy` 技能先做图（SVG/WebGL 的 HTML），再把图/录屏帧作为素材进 A 或 B 路线合成 |
+| 讲清一个技术概念/机械原理，需要精密等距图解当画面主体 | C 图解素材 | `anatomy` 技能先做图（SVG/WebGL 的 HTML），再把图/录屏帧作为素材进 A 或 B 路线合成。真数学/3D（LaTeX 公式逐步变形、3D 曲面、动力系统）走 `manimgx`（Manim 兼容 API + Rust 引擎，本 VM 用 lavapipe CPU 渲染）；像素风特效素材（火/爆炸/魔法/天气/转场 wipe）走 `pixelfx` 出帧序列或 sprite sheet 再进合成 |
 | 一句话主题→自动找素材、自动配音字幕的资讯/口播短视频（量产） | D 全自动短视频 | MoneyPrinterTurbo：`~/workspace/video-studio/apps/MoneyPrinterTurbo`（需用户提供 LLM key + Pexels key 后才能真跑，见「待配置」） |
 | 真人/实拍感/电影感片段，文生视频或图生视频 | E 生成片段 | **默认生成后端 = Muse 原生视频生成（免 key）**（每条约 10 秒、自带合成音效/音乐；单次消息最多 6 条）；多条用 ffmpeg 拼接。外部 API 仅作可选占位：Runway Dev（一个 key 聚合 Veo/Kling/Seedance），无 key 时不提议；**Sora API 已于 2026-09-24 下线，不要提议** |
-| 用户给了现成视频：剪辑、加字幕、配音、改竖屏、提炼片段 | F 素材再加工 | ffmpeg + `scripts/transcribe.py`（faster-whisper 转写）+ 本技能配音/字幕管线 |
+| 用户给了现成视频：剪辑、加字幕、配音、改竖屏、提炼片段 | F 素材再加工 | 默认用 `ffmpeg-skill` 的契约脚本（probe 先行→`--dry-run` 出计划→执行→`check.py --platform` 按平台规格验收），手写 ffmpeg 只作兜底；转写仍走 `scripts/transcribe.py`（faster-whisper）+ 本技能配音/字幕管线 |
 | 成片后想在剪映里继续改 | G 剪映草稿 | `scripts/make_jianying_draft.py`（pyJianYingDraft）生成草稿文件夹，用户拷到 Windows 剪映草稿目录打开 |
 | 小说/故事/梗概改编短剧、连续剧集、真人角色出演的剧情片 | H 短剧生产 | shuohao 流水线（见下「H 路线」专节）：大纲→角色/美术/剧本→走位→分镜生成包→E 路线生成→通用管线成片 |
 | 给一条参考视频（爆款/广告/带货/口播），要翻拍复刻、换人换物、或批量做变体 | I 参考复刻 | 纯方法路线（见下「I 路线」专节）：F 路线拆解结构→结构卡→E 路线按结构生成→通用管线出变体；不装任何外部平台 |
 
 含图表的画面先读 `dataviz` 技能再画。含人像：优先用户素材或原生生图/生视频；huashu 路线中人物按其技能规定用 AI 生帧+代码合成，不用代码画小人。
 写运镜/动效/转场的提示词或指令时，可查 `motion-prompt` 词典（动效与カメラワーク的命名+活样例库）取准确名称与规格，不要自己生造词。
+
+## 方法规范与参考层（v1.3.0 吸收，不占路线）
+
+以下方法来自 2026-11-01 对 14 个开源项目的深读评估（产物在 `~/workspace/video-research/eval2/`）。它们是规范与参考，不是新引擎——写片时按所属路线取用，不要为它们另起管线。
+
+- **风格参考层**：选风格/定调时先翻三处——`motion-prompt`（单个动效级词典）、本技能 `references/lemo-styles/`（67 种电影风格语法：不变量+禁忌清单，A/B 定调用）、`references/mg-styles/`（15 种整片 MG 风格的完整提示词，换种子出新片；其 `rubric.md` 的双 AI 两轮评审法可用于成片自评）。
+- **解说方法**（吸收自 anything2explainer + video-talkcraft）：①解说词先行且先给用户确认，再做画面；②长片先渲 30 秒样片过关再铺全片；③量化 QC：最长静止画面 ≤3s；④字级对时：配音定稿后用 whisper 字级时间戳把关键动效锁在词上，不靠估时；⑤反 PPT：运动做减法、一拍一主角，不堆贴纸与装饰。
+- **B 路线质检与音频**（吸收自 motion-video-kit + motionmaxxing）：交付前过可测量门——冻结帧时长、响度 LUFS、对比度、品牌色一致（motion-video-kit 的 quality-bar/audio 原文在 eval2 克隆里，可借用其脚本）；音频规则：有真实曲目时倒排让结尾落在片尾卡，音效增益按频段解算；反 slop 清单（禁用模式）：角落小标签、数字计数器、左标题右卡片式模板排版、无意义的装饰性动效。
+- **作曲模式**（吸收自 huashu-motion）：需要原创 BGM 又不想用素材库时，可走「先写谱（简谱/ABC 思路）→ 本机采样或合成演奏 → 切点对齐节拍排镜头」，补 BGM 空白；其「可编辑变量 + data-id 指帧定点返修」可借给 B 路线项目做返修规范（关键元素留 id，返修只改点名处）。
+- **A 子路线·无旁白知识长片**（`vibe-knowledge-film` 技能）：讲解设计优先于画面——每个概念先找一个外行认得的「形象」把它演出来（动词真的发生，不用点线圈代替），文案即字幕与分镜同写；先 30 秒样片、终检有量化门槛。仅 16:9 横屏，与 huashu 的有旁白短解说互补不冲突。
 
 ## 通用管线（A/B/C/F 共用）
 
@@ -96,12 +106,15 @@ hypit（27k★）是整套独立生产系统（自有语言/运行时/供应商�
 - 生成后端默认 Muse 原生（免 key），以下均为可选占位，不配不影响 H/I/E 路线运转：
   - Runway Dev API key：想直连 Veo/Kling/Seedance 聚合 API 时才需要。
   - Seedance（火山/即梦）或 MiniMax H3 平台账号：想按 shuohao 分镜的原生规格出片时才需要；否则原生生成顶替。
+  - 本地 GPU 跑 H3 不采用：FreeVideo（本地推理，最低 8GB 显存）已评估，用户 2026-11-01 明确决定不依赖本地 GPU，不要再提议装它；H3 原生规格只走云端通道。
 - MoneyPrinterTurbo：LLM key（OpenAI/DeepSeek 等任一）+ Pexels API key（免费）→ 写进其 `config.toml`（从 config.example.toml 复制），不要把 key 写进本技能或记忆。
 
 ## 不要做的事
 
 - 不要同时用 huashu 和 HyperFrames 当同一支片的渲染引擎（两者都是 HTML/Canvas→Chrome→ffmpeg，重合）；选一条主路线，另一条只借鉴样式。
 - 不要装 Remotion 重复造引擎（与 HyperFrames 同层，且其许可对 >3 人公司收费）；用户明确要 React 模板生态时再议。
+- 不要整装 anything2explainer / video-talkcraft：两者都是 PolyForm 非商业许可 + Remotion 引擎，与 A/B 同层；方法已吸收进下文「方法规范与参考层」，配方卡只借分类法、不复制其代码进生产。
+- 不要整装 huashu-motion / animate / motionmaxxing / openfilm：huashu-motion 是 huashu-art-motion 的同作者姊妹产品（产品发布片工作室），不是升级版、不要替换；animate 与 A 全重合且成熟度浅；motionmaxxing 自带第二套渲染运行时；openfilm 的价值在本地 GUI 编辑器，云端 VM 落不了地。各自可取的方法已吸收。
 - 不要安装 baoyu-design 全套：它不是视频工具（是幻灯/画布/设计系统/仪表盘的本地编辑器技能），与本环境 artifact 能力重合；只取了它的 dataviz。
 - 不要提议 Sora API（已下线）。不要用 Motion Canvas/Revideo（维护基本停滞）。
 - 不要安装 hypit 平台：它是整套独立生产系统（SVML 语言+运行时+供应商体系），与 HyperFrames+拼接管线重合，其技能壳脱离运行时无用；复刻方法已吸收进 I 路线。用户明确要换脸级复刻或百条级量产时，再按「独立 app」单独评估（参照 MoneyPrinterTurbo 的装法），不要塞进技能路由。
