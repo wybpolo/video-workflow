@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5.0 — 2026-11-07
+
+新增汽车垂直路线与契约层，验证载体为《汽车技法样片》v1/v2/v2.1/v2.2（本地 video-studio/projects/car-techniques-demo*，不入库；v1 用户评分 70）：
+
+- **新增 J 汽车视频路线（垂直层）**：设问标题卡开场 → 实测证据链 → 对比收束；乘用车对比主导、卡车证据链主导；手法→工具映射 references/car-techniques.md（33 条手法卡，源于用户两份文档《拍车叙事手法》《卡车拍摄叙事》OCR 提炼）；版式模板「画中画区块内容可变」；卡车选题库并入证据链。数据纪律：参数/价格/榜单必有来源、禁编造；像素长度不是物理尺寸、亮区占比不是照度、异车型画面不是同款配置证据。
+- **整合 car-video-production（用户私有仓，仓主以 zip 提供源码并指示整合；无 LICENSE）**：plan 契约 car-video.plan.v1（整数帧时间线、sources 指纹/复核范围/车型核验、claims 四类挂证据）定为 J 路线开工门，check_plan.py 原样 vendored；verify_video.py（完整解码+帧数核对+evidence JSON）定为出片技术门；验收五级分开记录（结构/技术/抽帧/正常速度观看/实机导出）；批量台账与检索后端声明（结构化检索不称语义召回）写入路线。其 ima 服务与追踪工作台为仓主 Windows 本机组件，未入库。
+- **自研工具（studio/scripts/）**：track_highlight.py v2——bbox 动态追踪，默认光流（PyrLK+前后向校验+RANSAC 相似变换）、CSRT 备选，box/highlight/zoom 三模式时间轴，轨迹 car-track.v2（归一化 xywh、丢失帧隐藏不展示陈旧位置）；highlight 支持压暗式与蓝/红半透明遮罩式（--mask）；car_lib.py + studio/car-library/——技法/镜头卡结构化检索（backend=local-scan），种子 33 条手法卡，每拆一支汽车片入库新镜头卡。
+- **演示迭代实录**：v1（无声技法拼贴，70 分）→ v2（plan 先行，45.000s/1350 帧整、旁白、光流分段追踪、verify 通过）→ v2.1（补静态图「标记→高亮→放大」绞盘三拍）→ v2.2（高亮改蓝色半透明遮罩式）。追踪实测结论：CSRT 后段收缩、光流后段滑移，长镜头必漂——分段重初始化（3–5s）+ 全段复核为标准做法。经验全文见 examples/demo/经验-汽车工作流整合-v150.md。
+
 ## v1.4.0 — 2026-11-07
 
 第三批评估（5 项深读）后的集成，验证载体为虚构越野车广告《拓野 T9 · 生而越野》（31.5s 1080p，本地 video-studio/projects/offroad-ad-demo/，不入库）：

@@ -32,3 +32,4 @@ install.sh 按下表 commit 拉取/恢复。升级上游时先改这里、验证
 - Playwright Chromium 在受限网络下用 npmmirror 直下 CFT 包手动安装，install.sh 已内置该方法。
 - HyperFrames 渲染需 TMPDIR 指到大磁盘目录、HYPERFRAMES_BROWSER_PATH 指到 Playwright 无头 Chrome、GSAP 等 CDN 库本地化（jsdelivr 在目标网络不可用）。
 - edge-tts 在 Muse 云 VM 被出口代理掐断，在 Windows 本机可用。
+| car-video-production（契约层） | 用户私有仓 kicpolo/car-video-production（2026-11-07 由仓主以 zip 提供源码） | —（私有仓，无公开 commit） | **无 LICENSE 文件**；按仓主本人指示整合 | plan 契约（car-video.plan.v1）要点与跟踪/检索/验收纪律吸收进总控 J 路线；check_plan.py、verify_video.py 两脚本原样 vendored 在 studio/scripts/；其 ima RAG 服务、光流 Tracker 工作台、卡片前端为仓主 Windows 本机组件，不在包内、未入库 |

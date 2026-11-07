@@ -3,7 +3,7 @@ name: video-workflow
 description: "视频制作总工作流（路由+管线）：用户给文本主题、图片或视频素材时，按内容选唯一路线——艺术/解说动画走 huashu-art-motion，通用设计/数据/产品片走 HyperFrames，技术图解素材走 anatomy，图表先过 dataviz，全自动口播短视频走 MoneyPrinterTurbo，实拍感片段走原生 AI 视频生成，小说/故事改短剧走 shuohao 短剧流水线，给参考视频要翻拍/复刻/批量变体走参考复刻法，精修交付走 pyJianYingDraft 剪映草稿；配音/字幕/拼接/质检在本技能内统一。避免多引擎重合：一个项目只选一条主路线。"
 metadata:
   author: "kis (for bingkis)"
-  version: "1.4.0"
+  version: "1.5.0"
   created: "2026-10-31"
 ---
 
@@ -11,7 +11,7 @@ metadata:
 
 你是导演+动画师+剪辑师。用户给「文本主题」或「图片/视频素材」，产出精美成片 MP4（可选附剪映可编辑草稿）。
 工作区：`~/workspace/video-studio/`（projects/ 放每个项目，scripts/ 放管线脚本，apps/ 放 MoneyPrinterTurbo，.venv 是 pyJianYingDraft+faster-whisper+edge-tts 环境）。
-已装技能（各管一层，不要重复造轮子）：`huashu-art-motion`、`hyperframes`+`hyperframes-cli`+`hyperframes-registry`+`media-use`、`anatomy`、`dataviz`、短剧流水线 `novel-outline`/`novel-characters`/`novel-art`/`novel-script`/`novel-staging`/`novel-storyboard`/`character-refs`（shuohao-skills，Apache-2.0，锁定 commit 见仓库 UPSTREAM.md）、动效词典 `motion-prompt`（参考层，不占路线）、`ffmpeg-skill`（F 路线契约化工具层，MIT）、`pixelfx`（像素特效资产层，MIT）、`manimgx`（C 路线数学/3D 引擎技能，引擎按需 pip 装，MIT）、`vibe-knowledge-film`（A 路线无旁白知识长片子技能，MIT）、`multiplane`（B 路线高质量渲染选项：技能文件 + 引擎装在 video-studio/apps/multiplane，Apache-2.0）、`rea-video`（I 路线前置拆解：技能文件 + CLI 装进 video-studio/.venv，必须连 rapidocr-onnxruntime 一起装——缺它时字幕/花字 OCR 层静默禁用只留一条 warning，2026-11-07 实测，Apache-2.0）。风格参考库在本技能 `references/` 下：`lemo-styles/`（lemo-opuscar 的 67 份电影风格语法 STYLE.md，CC BY 4.0）、`mg-styles/`（mg-styles-15 的 15 份整片风格提示词 + rubric 评审法 + template，MIT）、`shotcraft/`（video-shotcraft 的 124 张镜头配方卡 + sequences 骨架 + 声音设计/节拍同步/审美准则/剪映导出文档，Apache-2.0，只取文本资产，其 Remotion 引擎不装）。上游锁定 commit 见仓库 UPSTREAM.md。
+已装技能（各管一层，不要重复造轮子）：`huashu-art-motion`、`hyperframes`+`hyperframes-cli`+`hyperframes-registry`+`media-use`、`anatomy`、`dataviz`、短剧流水线 `novel-outline`/`novel-characters`/`novel-art`/`novel-script`/`novel-staging`/`novel-storyboard`/`character-refs`（shuohao-skills，Apache-2.0，锁定 commit 见仓库 UPSTREAM.md）、动效词典 `motion-prompt`（参考层，不占路线）、`ffmpeg-skill`（F 路线契约化工具层，MIT）、`pixelfx`（像素特效资产层，MIT）、`manimgx`（C 路线数学/3D 引擎技能，引擎按需 pip 装，MIT）、`vibe-knowledge-film`（A 路线无旁白知识长片子技能，MIT）、`multiplane`（B 路线高质量渲染选项：技能文件 + 引擎装在 video-studio/apps/multiplane，Apache-2.0）、`rea-video`（I 路线前置拆解：技能文件 + CLI 装进 video-studio/.venv，必须连 rapidocr-onnxruntime 一起装——缺它时字幕/花字 OCR 层静默禁用只留一条 warning，2026-11-07 实测，Apache-2.0）。风格参考库在本技能 `references/` 下：`lemo-styles/`（lemo-opuscar 的 67 份电影风格语法 STYLE.md，CC BY 4.0）、`mg-styles/`（mg-styles-15 的 15 份整片风格提示词 + rubric 评审法 + template，MIT）、`shotcraft/`（video-shotcraft 的 124 张镜头配方卡 + sequences 骨架 + 声音设计/节拍同步/审美准则/剪映导出文档，Apache-2.0，只取文本资产，其 Remotion 引擎不装）、`car-techniques.md`（汽车拍摄叙事 33 条手法全表 + 工具落点，J 路线，用户文档沉淀）。上游锁定 commit 见仓库 UPSTREAM.md。
 
 ## 第一步：选路线（只选一条主路线）
 
@@ -26,6 +26,7 @@ metadata:
 | 成片后想在剪映里继续改 | G 剪映草稿 | `scripts/make_jianying_draft.py`（pyJianYingDraft）生成草稿文件夹，用户拷到 Windows 剪映草稿目录打开。精细交付时按 shotcraft 剪映方法（原文在 `references/shotcraft/jianying-export.md`）：先渲一版无字幕无音轨的 **plate 干净底片**按镜切段进草稿（每镜可单独变速/重排），字幕走原生双轨、SFX 分道避同轨重叠、BGM 独立轨；时间一律微秒取整防 SegmentOverlap。装库层（草稿登记/媒体打包进 Resources）其 Windows 路径上游未真机验证，采用前先用一份小草稿在用户机器实测再上量产 |
 | 小说/故事/梗概改编短剧、连续剧集、真人角色出演的剧情片 | H 短剧生产 | shuohao 流水线（见下「H 路线」专节）：大纲→角色/美术/剧本→走位→分镜生成包→E 路线生成→通用管线成片 |
 | 给一条参考视频（爆款/广告/带货/口播），要翻拍复刻、换人换物、或批量做变体 | I 参考复刻 | 纯方法路线（见下「I 路线」专节）：F 路线拆解结构→结构卡→E 路线按结构生成→通用管线出变体；不装任何外部平台 |
+| 汽车类视频（评测/卖车/商用车种草/教程/广告），乘用车与卡车都算 | J 汽车视频 | 垂直工作流（见下「J 路线」专节）：先检索手法/镜头卡库定结构与技法，渲染与生成借 A/B/E/F/G 引擎出片（记作 J+B、J+E 等） |
 
 含图表的画面先读 `dataviz` 技能再画。含人像：优先用户素材或原生生图/生视频；huashu 路线中人物按其技能规定用 AI 生帧+代码合成，不用代码画小人。
 写运镜/动效/转场的提示词或指令时，可查 `motion-prompt` 词典（动效与カメラワーク的命名+活样例库）取准确名称与规格，不要自己生造词。
@@ -89,6 +90,28 @@ hypit（27k★）是整套独立生产系统（自有语言/运行时/供应商�
 3. **复刻生成**：按结构卡逐镜走 E 路线（Muse 原生生成，免 key）出新片段；真人一致性需求高时先用 character-refs 做锚点图再图生视频。运镜词查 motion-prompt。
 4. **变体量产**：同一结构卡换变量表即出一支新变体；每支过通用管线（配音/字幕/拼接/质检）。先出 1 支样片给用户确认，再批量。
 5. 边界：只复刻结构与表现形式，不逐帧抄袭受版权保护的成片内容；换脸指向真实公众人物时需用户明确授权素材。
+
+## J 路线：汽车视频（垂直工作流，v1.5.0 新增）
+
+素材来源：用户两份文档《拍车叙事手法》（乘用车后期包装手法库，23 节）与《卡车拍摄叙事》（商用车实拍证据选题库，7 组）的合并落地；33 条手法全表见 `references/car-techniques.md`。
+
+- **定位**：J 不自带引擎。它定**结构与技法**，出片借其他路线：解说/数据包装走 B、生成镜头走 E、实拍再加工走 F、剪映交付走 G（组合记作 J+B、J+E、J+F）。
+- **开工先检索卡库（RAG 拆视频层）**：`~/workspace/video-studio/.venv/bin/python ~/workspace/video-studio/scripts/car_lib.py search "车型 场景 手法词"`——库在 `video-studio/car-library/cards.jsonl`，含 33 条手法卡（两份文档沉淀）+ 历次拆解入库的镜头卡。规划时先拿相关手法与相似镜头再写分镜。**每拆一条新的汽车参考片/成片（rea-video），顺手 `car_lib.py ingest <breakdown.json> --name 片名` 入库**，库越用越厚。检索是结构化字段+关键词加权（标题/标签/类别/OCR），不是向量检索；命中质量靠入库时把 tags 与 OCR 带全。
+- **结构公式**（两文档合并）：设问标题卡开场（抛问题+使用场景）→ 证据链主体（实测数据链：充电计时+账单+电价表、尺寸量尺、通过性实景、特写清单逐个点）→ 对比收束（双车/新老款/出发前-结束后两帧对比给结论）。乘用车评测以对比为主叙事，商用车以证据链为主叙事。
+- **版式模板**：画中画区块内容可变（文档 A 唯一成文的量产方法论）——固定版式，区块内容在图表→图片→视频间流转，图片可连续切换细节、2 组图片作对比；量产只换区块内容不换版式。
+- **技法→工具映射**（全表见 references/car-techniques.md）：
+  - 对比（分屏/画中画多窗/透明度叠化/新老款差值表/价格并列）：B 路线合成或 F 路线拼贴；差值表、参数列表走文字图表或 dataviz。
+  - 图表（柱状/饼图/榜单/销量列表）：一律先读 dataviz 再画；出图后按「逐个高亮、标记、放大」做二次加工动画，不要一张图平讲到底。
+  - 尺子实测标注：画面上画尺寸线+毫米数（合成层）；数字来自实测或官方参数并标来源。
+  - 高亮/标记/放大：静帧用标记框+高亮+局部放大窗；高亮两式——**压暗式**（框外压暗、框内保持）与**遮罩式**（框外覆蓝/红半透明遮罩，`track_highlight.py --mask blue|red --mask-alpha 0.38`，用户 2026-11-07 指定），按画面底色选，暖色场景用蓝、冷色场景用红更醒目；**运动目标用追踪组** `~/workspace/video-studio/scripts/track_highlight.py` v2（默认光流 PyrLK+RANSAC 相似变换，`--tracker csrt` 备选 → box 框+标签、highlight 框外压暗/遮罩、zoom 追踪区域画中画放大，三种模式按时间轴拼）。追踪纪律（整合 car-video-production）：轨迹用归一化 xywh 落盘并注明参考画面，原始框与平滑框都保留；**丢失帧隐藏框，不展示陈旧位置**；不跨丢失段/切镜插值，切镜重新选框；bbox 不是抠像，高亮要独立 mask 层、框失准就不做高亮；匹配分数不是准确率。实测（同一涉水片段）：CSRT 后段收缩到车身、光流后段滑出车体——两者长镜头都会漂，**分段重初始化（每 3–5 秒）+ 全段抽帧复核**是标准做法，别一镜追到底。
+  - 抠图入画：主体抠净再入画做干净对比（查残留天空与边缘光晕，同 Multiplane 片尾卡教训）。
+  - 字效/转场/机位：大字逐字出现作章节卡；转场可用「下一镜关键帧图提前作转场插图」；机位清单（跟随/俯/仰/拉升/广角/长焦 + 后视镜/第一人称/游戏视角）写进分镜表逐项核对。
+- **数据纪律**：汽车片的信任货币是数据——参数、价格、榜单、计时、账单必须核实来源（官方参数/平台榜单/实测记录），拿不准的数字标注出入请用户拍板（同 BYD T5 先例），禁止编造参数与名次。补充（整合 car-video-production）：像素长度不是物理尺寸、亮区占比不是照度、不同车型的画面不是同款配置的证据；对比必须注明条件、单位、时间与来源，示意与实测分开标注。
+- **plan 先行（整合 car-video-production 的 plan 契约）**：每支 J 片开工先按 `car-video.plan.v1` 写 plan.json（模板与字段说明随其技能包，检查器已 vendor 为 `video-studio/scripts/check_plan.py`）：整数帧时间线（主镜头连续覆盖总长）、sources 带指纹/已复核范围/车型核验状态、claims 逐条挂证据（illustration/observation/measurement/specification 四类，测量必带单位——无证据的事实主张过不了检查）。四种时间分开记：原片时间、预览时间、分析时间、整片时间不叠加偏移；裁后片段以本地文件时间为准。plan 是交接格式不是编译器，渲染仍由各路线脚本按 plan 生成参数。
+- **验收分级（整合）**：出片最终门用 `video-studio/scripts/verify_video.py`（完整解码 + 帧数/尺寸/帧率核对，产出 evidence JSON，结论只是 technical_pass）。交付说明把验证级别分开写：plan 结构过 ≠ 技术过 ≠ 抽帧看过 ≠ 正常速度看完/听完 ≠ 剪映实机导出过——做了哪级说哪级。审片抽帧除每镜中点外必须含**每个切点前后帧**与首末帧（只看中点会漏尾帧污染，历史教训）。
+- **批量台账（整合）**：批量生产逐条建 job（独立目录/输出名/缓存），台账记主题、车型年款、来源、缺失素材、手法、渲染器、状态、验证级别、失败原因；只换标题复用同一素材不算内容差异化；单条失败不污染其他条，不拿空白素材把任务凑绿。
+- **检索后端声明（整合）**：卡库检索是结构化字段检索（backend=local-scan/manual），**不称作语义召回**；将来接用户的 ima 服务（127.0.0.1:8765）或向量索引时按统一候选字段适配并在 plan 里声明 backend 与模型标识。查询按「主体+部位+动作/场景+机位」分解多方向召回；入选片段查首/中/尾与切点附近，核对车型、干净范围、既有字幕水印与来源使用范围，不确定记 unknown。
+- **文档缺口补强**（两份文档没写、工作流自带）：开头钩子除设问卡外可用痛点句或结论前置；结尾必须有转化设计——对比结论一句话 + 价格锚点 + 下一步行动点，不要证据链讲完就散场。
 
 ## 已验证的环境事实（2026-10-31 实测，别重新踩）
 

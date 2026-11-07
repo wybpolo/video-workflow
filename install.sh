@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# video-workflow 一键恢复脚本（v1.4.0）
+# video-workflow 一键恢复脚本（v1.5.0）
 # 用法: bash install.sh        环境变量: WORKSPACE(默认 ~/workspace)
 # 做的事: 1) 技能 -> $WORKSPACE/custom-skills  2) 管线 -> $WORKSPACE/video-studio
 #         3) 上游技能按 UPSTREAM.md 锁定 commit 克隆  4) venv 依赖
