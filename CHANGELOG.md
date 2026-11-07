@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.4.0 — 2026-11-07
+
+第三批评估（5 项深读）后的集成，验证载体为虚构越野车广告《拓野 T9 · 生而越野》（31.5s 1080p，本地 video-studio/projects/offroad-ad-demo/，不入库）：
+
+- **新增技能 Multiplane**（LBEILC，锁定 e20b845，Apache-2.0）——B 路线高质量渲染选项：切镜感知运动模糊、three 层累积景深、lint→verify→成片回读的确定性自检、alpha 输出。仅技能文件 vendored，引擎由 install.sh 按锁定 commit 克隆到 video-studio/apps/multiplane 并 npm install。与 HyperFrames 镜头契约互不兼容，按片二选一。实测（本仓 VM）：品牌片尾卡 4s/1080p，verify 五项逐像素比对全过、正式渲染约 13 分钟（2 worker）；坑：three 层 DOF 关 adaptiveSamples 改固定 samples≈8 + WebGL 层 pixelRatio 0.5（否则静帧 >7 分钟）、大面积透明面片不要进 three 层当卡（整幅写深度污染景深，改 HTML overlay + 页面级运动模糊）、抠图蒙版要清残留天空。
+- **新增技能 rea-video**（JuneYaooo，锁定 c9359c4，Apache-2.0）——I 路线拆解默认前置：本地 CPU 取证（切镜/10 类制作方式分类+置信度/OCR 字幕轴/BPM 与音效落点/逐镜帧图）产出 breakdown.json 映射结构卡；低置信镜头由 agent 看帧图复核（muse.ai 内不需要 VLM key）。技能 + references vendored，引擎由 install.sh 从锁定克隆 uv pip 装进 studio .venv。**必须连 rapidocr-onnxruntime 一起装**——缺它字幕/花字 OCR 层静默禁用（只有一行 warning），实测首跑全漏烧录字幕、补装后完整提取。不启用其 capsule-cinema 执行集成；拆解优先用原始下载文件（平台转码剥生成器指纹、误判上升，其自带 eval 实证）；其音频来源推断实测不可靠（把原生声+旁白误报为曲库 BGM），转述结论带置信度。
+- **参考层摘录**：video-shotcraft（Vincentwei1021，锁定 1266a3e，已核实真 Apache-2.0）的 124 张镜头配方卡 + sequences 骨架 + sound-design/music-beat-sync/aesthetic-rules/jianying-export 文档进总控 references/shotcraft/（只取文本资产，其 Remotion 引擎/模板/工作台不装）；其剪映 plate 分层法（干净底片按镜切段进草稿）与装库法吸收进 G 路线（Windows 装库路径上游未验证，注明先小样实测）。
+- **方法吸收（不装）**：fy-code-animation（★238，其 341 风格库本体不在仓库、自订许可禁止付费再打包、Remotion 落地）只取三点进总控方法规范——词锚 rigor 进 A 路线对时、音乐四案选择流程进通用管线 BGM、气势词与字形轮廓意识；skool.com/mromi 付费社群（$45/月变现课）跳过。
+- **验证汇总**：rea-video 拆《凌晨两点的花》v2 经 agent 逐帧复核后分类全对，并复拆广告成片得「AI 生成 99% + 3D 渲染 1%」与实际制作方式基本吻合；广告经 ffmpeg-skill 响度归一与 YouTube 规格验收（12 项全过）。逐项速记见 examples/demo/新技能实测-v140.md。
+
 ## v1.3.1 — 2026-11-01
 
 文档与经验沉淀（无技能/路由变更）：

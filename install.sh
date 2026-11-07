@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# video-workflow 一键恢复脚本（v1.3.0）
+# video-workflow 一键恢复脚本（v1.4.0）
 # 用法: bash install.sh        环境变量: WORKSPACE(默认 ~/workspace)
 # 做的事: 1) 技能 -> $WORKSPACE/custom-skills  2) 管线 -> $WORKSPACE/video-studio
 #         3) 上游技能按 UPSTREAM.md 锁定 commit 克隆  4) venv 依赖
@@ -20,6 +20,8 @@ FFMPEG_SHA=1ce2c186bf1dba96132d87274eee46df4f537e0e
 PIXELFX_SHA=a84159688af3ca37a4be05a0d422b94451b2e24e
 MANIMGX_SHA=1fb4dd7327bf5ed7d0c40d022c05cb816455ae1d
 VIBE_SHA=62d51508aad00003dc6209afa80c4b5dc540de59
+MULTIPLANE_SHA=e20b8451703a4ecfd79ca41f380b9d79d2fb926f
+REA_SHA=c9359c46f90c9824713081ea18fd207a45a0636a
 # motion-prompt 已全量 vendored（3 个文本文件），无需克隆恢复
 
 mkdir -p "$SKILLS_DST" "$STUDIO"/{scripts,projects,output,apps,.tmp}
@@ -59,12 +61,23 @@ clone_pinned https://github.com/HeyChengC/vibe-knowledge-film.git "$VIBE_SHA" "$
 rsync -a --exclude='.git' "$TMPCLONE/vibe/" "$SKILLS_DST/vibe-knowledge-film/"
 clone_pinned https://github.com/academa-labs/manimgx.git "$MANIMGX_SHA" "$TMPCLONE/manimgx"
 rsync -a "$TMPCLONE/manimgx/skills/manimgx/" "$SKILLS_DST/manimgx/"   # 只有技能文件，引擎见 4/6 的 uv tool install
+clone_pinned https://github.com/LBEILC/Multiplane.git "$MULTIPLANE_SHA" "$TMPCLONE/multiplane"
+rsync -a "$TMPCLONE/multiplane/skills/multiplane/" "$SKILLS_DST/multiplane/"   # 只有技能文件
+mkdir -p "$STUDIO/apps"
+rsync -a --exclude='.git' --exclude='app' "$TMPCLONE/multiplane/" "$STUDIO/apps/multiplane/"   # 引擎本体（B 路线高质量渲染选项）
+(cd "$STUDIO/apps/multiplane" && npm install --no-audit --no-fund)   # 含 Playwright Chromium 下载，慢网耐心等；缺系统库时按其提示跑 npx playwright install-deps chromium
+clone_pinned https://github.com/JuneYaooo/rea-video.git "$REA_SHA" "$TMPCLONE/rea-video"
+rsync -a "$TMPCLONE/rea-video/skills/rea-video/" "$SKILLS_DST/rea-video/"   # 技能 + references 覆盖 vendored 副本
 rm -rf "$TMPCLONE"
 
-echo "== 4/6 python venv (pyJianYingDraft + faster-whisper + edge-tts) =="
+echo "== 4/6 python venv (pyJianYingDraft + faster-whisper + edge-tts + rea-video) =="
 command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
 [ -d "$STUDIO/.venv" ] || uv venv "$STUDIO/.venv" --python 3.12
 uv pip install --python "$STUDIO/.venv/bin/python" pyJianYingDraft==0.3.1 faster-whisper "av<19" edge-tts pip-system-certs
+REATMP="$(mktemp -d)"
+clone_pinned https://github.com/JuneYaooo/rea-video.git "$REA_SHA" "$REATMP/rea-video"
+uv pip install --python "$STUDIO/.venv/bin/python" "$REATMP/rea-video" rapidocr-onnxruntime   # rapidocr 必装：缺它 rea-video 的 OCR 字幕层静默禁用（2026-11-07 实测）
+rm -rf "$REATMP"
 command -v manimgx >/dev/null || uv tool install --python 3.14 manimgx   # C 路线数学/3D 引擎（0.1.1；无 GPU 时自带 lavapipe CPU 兜底）
 
 echo "== 5/6 playwright chromium (npmmirror CFT 156) =="

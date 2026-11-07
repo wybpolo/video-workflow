@@ -1,4 +1,4 @@
-# 上游锁定清单（2026-11-01 更新）
+# 上游锁定清单（2026-11-07 更新）
 
 install.sh 按下表 commit 拉取/恢复。升级上游时先改这里、验证、再升本仓版本。
 
@@ -18,10 +18,15 @@ install.sh 按下表 commit 拉取/恢复。升级上游时先改这里、验证
 | mg-styles-15（参考层） | github.com/Vincentwei1021/mg-styles-15 | 49052d80bfaf9fa8412cc9710530e5e95a3b8d8c | MIT | **不装技能**：仅 prompts/ 15 份 + rubric.md + template.md 摘录 vendored 在 skills/video-workflow/references/mg-styles/ |
 | hypit | github.com/hypit-ai/hypit | —（不锁定） | 修改版 Apache-2.0（附加条件） | **不安装**：整套独立生产系统与本仓管线重合；其参考复刻方法已吸收为总控 I 路线（纯方法，零代码） |
 | MoneyPrinterTurbo | github.com/harry0703/MoneyPrinterTurbo | 8dbfbb8e9de1b8f9d745d73a8e9f07464248cdd9 | MIT | 不 vendored（独立应用）；install.sh clone 到 video-studio/apps 并装 venv |
+| multiplane | github.com/LBEILC/Multiplane | e20b8451703a4ecfd79ca41f380b9d79d2fb926f | Apache-2.0 | 仅技能文件 vendored（1 文件，skills/multiplane）；引擎不入库，install.sh clone 后 rsync 到 video-studio/apps/multiplane 并 npm install |
+| rea-video | github.com/JuneYaooo/rea-video | c9359c46f90c9824713081ea18fd207a45a0636a | Apache-2.0 | 技能 + references 全量 vendored（9 个文本文件）；引擎不入库，install.sh 从锁定克隆 `uv pip install` 进 video-studio/.venv，**必须连带 rapidocr-onnxruntime**（缺它 OCR 字幕层静默禁用，2026-11-07 实测） |
+| video-shotcraft（参考层） | github.com/Vincentwei1021/video-shotcraft | 1266a3ec4831289c4d893d42dd5102723658039a | Apache-2.0（已核实，非该作者另一仓的 PolyForm） | **不装技能**：仅 124 张 shots 配方卡 + sequences + sound-design/music-beat-sync/aesthetic-rules/jianying-export 文档摘录 vendored 在 skills/video-workflow/references/shotcraft/；其 Remotion 引擎/模板不装 |
 | pyJianYingDraft | PyPI pyJianYingDraft==0.3.1 | — | Apache-2.0 | install.sh 装进 video-studio/.venv |
 | faster-whisper | PyPI（钉 av<19） | — | MIT | 同上 |
 
 2026-11-01 第二批评估的其余仓库（均不锁定、不安装）：anything2explainer、video-talkcraft（PolyForm 非商业 + Remotion 引擎，方法已吸收进总控「方法规范与参考层」）；motion-video-kit、motionmaxxing、huashu-motion、animate、openfilm（与现有引擎同层或落地形态不合，可取方法已吸收，理由见总控技能「不要做的事」）；FreeVideo（本地跑 MiniMax H3 的独立 app——用户 2026-11-01 决定不依赖本地 GPU，不采用，H3 原生规格只走云端通道）。
+
+2026-11-06 第三批评估的其余项（均不锁定、不安装）：fy-code-animation（★238，github.com/Akillll-DuoHe/fy-code-animation——其 341 风格库本体不在仓库、自订许可禁止付费再打包、Remotion 落地、本地 ACE-Step 配乐需 GPU；只吸收方法三点进总控：词锚 rigor、音乐四案、气势词/字形轮廓）；skool.com/mromi「AI Creator Lab」（付费社群 $45/月，变现课程非工具，跳过）。
 
 注意（已实测，见 skills/video-workflow/SKILL.md「已验证的环境事实」）：
 - Playwright Chromium 在受限网络下用 npmmirror 直下 CFT 包手动安装，install.sh 已内置该方法。

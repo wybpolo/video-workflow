@@ -3,7 +3,7 @@ name: video-workflow
 description: "视频制作总工作流（路由+管线）：用户给文本主题、图片或视频素材时，按内容选唯一路线——艺术/解说动画走 huashu-art-motion，通用设计/数据/产品片走 HyperFrames，技术图解素材走 anatomy，图表先过 dataviz，全自动口播短视频走 MoneyPrinterTurbo，实拍感片段走原生 AI 视频生成，小说/故事改短剧走 shuohao 短剧流水线，给参考视频要翻拍/复刻/批量变体走参考复刻法，精修交付走 pyJianYingDraft 剪映草稿；配音/字幕/拼接/质检在本技能内统一。避免多引擎重合：一个项目只选一条主路线。"
 metadata:
   author: "kis (for bingkis)"
-  version: "1.3.0"
+  version: "1.4.0"
   created: "2026-10-31"
 ---
 
@@ -11,34 +11,36 @@ metadata:
 
 你是导演+动画师+剪辑师。用户给「文本主题」或「图片/视频素材」，产出精美成片 MP4（可选附剪映可编辑草稿）。
 工作区：`~/workspace/video-studio/`（projects/ 放每个项目，scripts/ 放管线脚本，apps/ 放 MoneyPrinterTurbo，.venv 是 pyJianYingDraft+faster-whisper+edge-tts 环境）。
-已装技能（各管一层，不要重复造轮子）：`huashu-art-motion`、`hyperframes`+`hyperframes-cli`+`hyperframes-registry`+`media-use`、`anatomy`、`dataviz`、短剧流水线 `novel-outline`/`novel-characters`/`novel-art`/`novel-script`/`novel-staging`/`novel-storyboard`/`character-refs`（shuohao-skills，Apache-2.0，锁定 commit 见仓库 UPSTREAM.md）、动效词典 `motion-prompt`（参考层，不占路线）、`ffmpeg-skill`（F 路线契约化工具层，MIT）、`pixelfx`（像素特效资产层，MIT）、`manimgx`（C 路线数学/3D 引擎技能，引擎按需 pip 装，MIT）、`vibe-knowledge-film`（A 路线无旁白知识长片子技能，MIT）。风格参考库在本技能 `references/` 下：`lemo-styles/`（lemo-opuscar 的 67 份电影风格语法 STYLE.md，CC BY 4.0）、`mg-styles/`（mg-styles-15 的 15 份整片风格提示词 + rubric 评审法 + template，MIT）。上游锁定 commit 见仓库 UPSTREAM.md。
+已装技能（各管一层，不要重复造轮子）：`huashu-art-motion`、`hyperframes`+`hyperframes-cli`+`hyperframes-registry`+`media-use`、`anatomy`、`dataviz`、短剧流水线 `novel-outline`/`novel-characters`/`novel-art`/`novel-script`/`novel-staging`/`novel-storyboard`/`character-refs`（shuohao-skills，Apache-2.0，锁定 commit 见仓库 UPSTREAM.md）、动效词典 `motion-prompt`（参考层，不占路线）、`ffmpeg-skill`（F 路线契约化工具层，MIT）、`pixelfx`（像素特效资产层，MIT）、`manimgx`（C 路线数学/3D 引擎技能，引擎按需 pip 装，MIT）、`vibe-knowledge-film`（A 路线无旁白知识长片子技能，MIT）、`multiplane`（B 路线高质量渲染选项：技能文件 + 引擎装在 video-studio/apps/multiplane，Apache-2.0）、`rea-video`（I 路线前置拆解：技能文件 + CLI 装进 video-studio/.venv，必须连 rapidocr-onnxruntime 一起装——缺它时字幕/花字 OCR 层静默禁用只留一条 warning，2026-11-07 实测，Apache-2.0）。风格参考库在本技能 `references/` 下：`lemo-styles/`（lemo-opuscar 的 67 份电影风格语法 STYLE.md，CC BY 4.0）、`mg-styles/`（mg-styles-15 的 15 份整片风格提示词 + rubric 评审法 + template，MIT）、`shotcraft/`（video-shotcraft 的 124 张镜头配方卡 + sequences 骨架 + 声音设计/节拍同步/审美准则/剪映导出文档，Apache-2.0，只取文本资产，其 Remotion 引擎不装）。上游锁定 commit 见仓库 UPSTREAM.md。
 
 ## 第一步：选路线（只选一条主路线）
 
 | 用户给的 / 想要的 | 路线 | 工具 |
 |---|---|---|
 | 艺术风格动画、解说科普（Kurzgesagt/Vox/白板/3b1b 风）、口播解说片、名画穿越、复刻某段动画 | A 艺术解说 | `huashu-art-motion` 技能全程（镜头表→lint→逐镜渲染→qa→deliver 门禁）。子格式：无旁白、字幕驱动的横屏知识长片（2–5 分钟，抖音「知识大赏」式）走 `vibe-knowledge-film` 技能（见下「方法规范」A 子路线） |
-| 产品发布片、数据片、网页/截图讲解、标题卡、竖屏信息片、设计感 MG 动画 | B 通用设计 | HyperFrames：`npx hyperframes init` 起项目，按 `hyperframes` 技能契约写 HTML 合成，`npx hyperframes check` 后渲染 |
+| 产品发布片、数据片、网页/截图讲解、标题卡、竖屏信息片、设计感 MG 动画 | B 通用设计 | 默认 HyperFrames：`npx hyperframes init` 起项目，按 `hyperframes` 技能契约写 HTML 合成，`npx hyperframes check` 后渲染。**高质量选项**：镜头含快速运动、需要真实运动模糊/景深虚化/透明通道，或想要确定性自检（lint→verify→成片回读）时，按 `multiplane` 技能改走 Multiplane 渲染（镜头=网页 + `render(t)` 契约，与 HyperFrames 项目互不兼容，按片二选一，不要中途换引擎）。实测教训（2026-11-07 本 VM）：three 层 DOF 关掉 adaptiveSamples 改固定 samples≈8 + WebGL 层 pixelRatio 0.5，否则 1080p 软渲染静帧 >7 分钟；大面积透明面片不要进 three 层当卡（会整幅写深度污染景深锐度），改 HTML overlay + 页面级运动模糊；verify 全量约 10 分钟、1080p 4 秒镜正式渲染约 13 分钟（2 worker），排期按这个量级 |
 | 讲清一个技术概念/机械原理，需要精密等距图解当画面主体 | C 图解素材 | `anatomy` 技能先做图（SVG/WebGL 的 HTML），再把图/录屏帧作为素材进 A 或 B 路线合成。真数学/3D（LaTeX 公式逐步变形、3D 曲面、动力系统）走 `manimgx`（Manim 兼容 API + Rust 引擎，本 VM 用 lavapipe CPU 渲染）；像素风特效素材（火/爆炸/魔法/天气/转场 wipe）走 `pixelfx` 出帧序列或 sprite sheet 再进合成 |
 | 一句话主题→自动找素材、自动配音字幕的资讯/口播短视频（量产） | D 全自动短视频 | MoneyPrinterTurbo：`~/workspace/video-studio/apps/MoneyPrinterTurbo`（需用户提供 LLM key + Pexels key 后才能真跑，见「待配置」） |
 | 真人/实拍感/电影感片段，文生视频或图生视频 | E 生成片段 | **默认生成后端 = Muse 原生视频生成（免 key）**（每条约 10 秒、自带合成音效/音乐；单次消息最多 6 条）；多条用 ffmpeg 拼接。外部 API 仅作可选占位：Runway Dev（一个 key 聚合 Veo/Kling/Seedance），无 key 时不提议；**Sora API 已于 2026-09-24 下线，不要提议** |
 | 用户给了现成视频：剪辑、加字幕、配音、改竖屏、提炼片段 | F 素材再加工 | 默认用 `ffmpeg-skill` 的契约脚本（probe 先行→`--dry-run` 出计划→执行→`check.py --platform` 按平台规格验收），手写 ffmpeg 只作兜底；转写仍走 `scripts/transcribe.py`（faster-whisper）+ 本技能配音/字幕管线 |
-| 成片后想在剪映里继续改 | G 剪映草稿 | `scripts/make_jianying_draft.py`（pyJianYingDraft）生成草稿文件夹，用户拷到 Windows 剪映草稿目录打开 |
+| 成片后想在剪映里继续改 | G 剪映草稿 | `scripts/make_jianying_draft.py`（pyJianYingDraft）生成草稿文件夹，用户拷到 Windows 剪映草稿目录打开。精细交付时按 shotcraft 剪映方法（原文在 `references/shotcraft/jianying-export.md`）：先渲一版无字幕无音轨的 **plate 干净底片**按镜切段进草稿（每镜可单独变速/重排），字幕走原生双轨、SFX 分道避同轨重叠、BGM 独立轨；时间一律微秒取整防 SegmentOverlap。装库层（草稿登记/媒体打包进 Resources）其 Windows 路径上游未真机验证，采用前先用一份小草稿在用户机器实测再上量产 |
 | 小说/故事/梗概改编短剧、连续剧集、真人角色出演的剧情片 | H 短剧生产 | shuohao 流水线（见下「H 路线」专节）：大纲→角色/美术/剧本→走位→分镜生成包→E 路线生成→通用管线成片 |
 | 给一条参考视频（爆款/广告/带货/口播），要翻拍复刻、换人换物、或批量做变体 | I 参考复刻 | 纯方法路线（见下「I 路线」专节）：F 路线拆解结构→结构卡→E 路线按结构生成→通用管线出变体；不装任何外部平台 |
 
 含图表的画面先读 `dataviz` 技能再画。含人像：优先用户素材或原生生图/生视频；huashu 路线中人物按其技能规定用 AI 生帧+代码合成，不用代码画小人。
 写运镜/动效/转场的提示词或指令时，可查 `motion-prompt` 词典（动效与カメラワーク的命名+活样例库）取准确名称与规格，不要自己生造词。
 
-## 方法规范与参考层（v1.3.0 吸收，不占路线）
+## 方法规范与参考层（v1.3.0 / v1.4.0 吸收，不占路线）
 
-以下方法来自 2026-11-01 对 14 个开源项目的深读评估（产物在 `~/workspace/video-research/eval2/`）。它们是规范与参考，不是新引擎——写片时按所属路线取用，不要为它们另起管线。
+以下方法来自 2026-11-01 对 14 个开源项目、2026-11-06 对 5 个项目的深读评估（产物在 `~/workspace/video-research/eval2/`、`eval3/`）。它们是规范与参考，不是新引擎——写片时按所属路线取用，不要为它们另起管线。
 
 - **风格参考层**：选风格/定调时先翻三处——`motion-prompt`（单个动效级词典）、本技能 `references/lemo-styles/`（67 种电影风格语法：不变量+禁忌清单，A/B 定调用）、`references/mg-styles/`（15 种整片 MG 风格的完整提示词，换种子出新片；其 `rubric.md` 的双 AI 两轮评审法可用于成片自评）。
 - **解说方法**（吸收自 anything2explainer + video-talkcraft）：①解说词先行且先给用户确认，再做画面；②长片先渲 30 秒样片过关再铺全片；③量化 QC：最长静止画面 ≤3s；④字级对时：配音定稿后用 whisper 字级时间戳把关键动效锁在词上，不靠估时；⑤反 PPT：运动做减法、一拍一主角，不堆贴纸与装饰。
 - **B 路线质检与音频**（吸收自 motion-video-kit + motionmaxxing）：交付前过可测量门——冻结帧时长、响度 LUFS、对比度、品牌色一致（motion-video-kit 的 quality-bar/audio 原文在 eval2 克隆里，可借用其脚本）；音频规则：有真实曲目时倒排让结尾落在片尾卡，音效增益按频段解算；反 slop 清单（禁用模式）：角落小标签、数字计数器、左标题右卡片式模板排版、无意义的装饰性动效。
 - **作曲模式**（吸收自 huashu-motion）：需要原创 BGM 又不想用素材库时，可走「先写谱（简谱/ABC 思路）→ 本机采样或合成演奏 → 切点对齐节拍排镜头」，补 BGM 空白；其「可编辑变量 + data-id 指帧定点返修」可借给 B 路线项目做返修规范（关键元素留 id，返修只改点名处）。
 - **A 子路线·无旁白知识长片**（`vibe-knowledge-film` 技能）：讲解设计优先于画面——每个概念先找一个外行认得的「形象」把它演出来（动词真的发生，不用点线圈代替），文案即字幕与分镜同写；先 30 秒样片、终检有量化门槛。仅 16:9 横屏，与 huashu 的有旁白短解说互补不冲突。
+- **镜头配方与声音参考**（摘自 video-shotcraft，Apache-2.0；其 Remotion 引擎与模板**不装**，SKILL.md 里的作者引流话术不要带入交付）：产品片/宣传片选镜先翻 `references/shotcraft/shots/`（124 张配方卡：意图+帧级参数+已知坑，与 motion-prompt 的单动效词条互补）与 `sequences/` 全片骨架；声音阶段翻 `sound-design.md`（音效钉帧与偏移补偿）+ `music-beat-sync.md`（librosa 节拍网格拟合、渲后回测），其免 key 的 Freesound 选材脚本可作音频素材备选。
+- **词锚与音乐四案**（吸收自 fy-code-animation；其 341 画风库正文不在仓内、落地主打 Remotion、许可禁付费包装，**不整装**）：①词锚口径——字级对时之外，同一词多次出现要标第几次出现，换配音后全部锚点失效重核；②音乐四案——分镜定稿后先给四个实质差异的音乐方案（自作曲/素材库/生成/静默设计）让用户试听选定，再按选定音轨的实际节拍校准镜头切点，与「作曲模式」并列为 BGM 决策流程；③中文动态文字可借其气势词与字形轮廓做法（原文在 eval3 克隆的 recipes/ 里）。
 
 ## 通用管线（A/B/C/F 共用）
 
@@ -82,7 +84,7 @@ metadata:
 
 hypit（27k★）是整套独立生产系统（自有语言/运行时/供应商），与 B 路线+拼接管线全面重合，只取其「复刻」方法，用现有工具执行：
 
-1. **拆解**（F 路线工具）：参考片转写（faster-whisper）+ 按镜头抽帧 + 逐镜标注：钩子（前 3 秒）、结构段（钩子→展示→卖点/反转→收尾 CTA）、每镜景别/运镜/时长、台词骨架、字幕与 BGM 位置。产出一张「结构卡」（JSON 或 md 存项目目录）。
+1. **拆解**：默认先用 `rea-video` 技能自动拆解（`rea-video decompose <片> -o <项目目录>/breakdown`，本地 CPU 取证零 API 成本：切镜、逐镜制作方式分类（实拍/AI/代码/录屏等 10 类）+ 置信度、OCR 字幕轴、BPM 与音效落点、逐镜帧图与复刻方案），产出 breakdown.json 后映射成结构卡（字段对照见 rea-video 技能的 output-template；它的生成单元口径要换算成本环境原生生成的约 10s/条、单次 ≤6 条）。低置信镜头由我看帧图复核（本环境不需要 VLM key；外部环境才配 REA_VLM_*）。拆解对象优先用**原始下载文件**——平台转码会剥掉生成器指纹、误判率显著上升（其自带 eval 实证），结论转述必须带置信度。rea-video 不可用时回退人工拆解：转写（faster-whisper）+ 按镜头抽帧 + 逐镜标注（钩子/结构段/景别/运镜/时长/台词骨架/字幕与 BGM 位置）。**不要启用 rea-video 的 capsule-cinema 执行集成**，执行只走本工作流的 E 路线 + assemble。
 2. **变量表**：把可替换项列清——人物（脸/服装/声线）、物品（产品/道具）、台词（卖点词）、场景、B-roll；不变的是结构与节奏。
 3. **复刻生成**：按结构卡逐镜走 E 路线（Muse 原生生成，免 key）出新片段；真人一致性需求高时先用 character-refs 做锚点图再图生视频。运镜词查 motion-prompt。
 4. **变体量产**：同一结构卡换变量表即出一支新变体；每支过通用管线（配音/字幕/拼接/质检）。先出 1 支样片给用户确认，再批量。

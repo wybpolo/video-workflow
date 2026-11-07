@@ -13,6 +13,8 @@
 | 图表规范 | **dataviz**（取自 baoyu-design） | 画图表前先过它，配色可验证 |
 | 全自动口播短视频 | **MoneyPrinterTurbo**（137k★） | 主题→脚本→素材→配音→字幕→成片量产线。已装到 apps/，CLI 实测可跑；**差两个 key 才能真用**：LLM key + Pexels key（免费申请） |
 | 剪映精修 | **pyJianYingDraft** 0.3.1 | 生成剪映可编辑草稿（非成片），你拷到 Windows 剪映草稿目录继续改。已装，已实测生成合法草稿（含真实视频轨+文字轨）。注意：只支持国内剪映，国际 CapCut 不行；自动导出仅剪映 ≤6.x |
+| 高质量渲染选项（B 路线） | **Multiplane**（Apache-2.0） | 切镜感知运动模糊 + 累积景深 + 确定性自检（lint→verify→成片回读）。与 HyperFrames 按片二选一。已装（引擎在 apps/multiplane），1080p 4 秒镜实测：verify 五项全过、正式渲染约 13 分钟——质量换时间，只给关键镜头 |
+| 参考片拆解（I 路线前置） | **rea-video**（Apache-2.0） | 本地 CPU 把参考片拆成机读 breakdown（切镜/逐镜制作方式分类/OCR 字幕轴/节拍），再映射成结构卡。已装进 .venv；**必须连 rapidocr-onnxruntime 一起装**，缺它字幕层静默失效（实测） |
 | 配音 | Muse 原生 TTS（首选，本机可用） / edge-tts（免费微软音） | edge-tts 在本云 VM 被出口代理掐断（已实测），在你 Windows 本机可正常用；MoneyPrinterTurbo 默认也用它 |
 | 字幕/转写 | faster-whisper + SRT/ASS 烧录 | 已装进 .venv；模型首次下载较慢（本 VM 网络），自备口播稿时直接按稿对齐出字幕，不依赖转写 |
 | 生成式实拍片段 | Muse 原生视频生成（约10秒/条、自带声音、单次≤6条） | 外部备选 Runway Dev API（一个 key 聚合 Veo/Kling/Seedance，需付费 key）。**Sora API 已下线（2026-09-24），别再考虑** |

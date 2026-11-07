@@ -8,6 +8,7 @@
 | [案例-凌晨两点的花-短剧.md](案例-凌晨两点的花-短剧.md) | H 路线微短剧 v1 → v2 | 短剧优先原生对白（台词写进生成提示词），TTS 后配必然口型错位且声线不受控；先修故事冲突再谈制作 |
 | [案例-参考复刻.md](案例-参考复刻.md) | I 路线拆 Pexels 参考片做两支换品变体 | 复刻的是每镜的「功能」不是像素；变量表先行，变体共用一张结构卡 |
 | [新技能实测-v130.md](新技能实测-v130.md) | v1.3.0 四技能（ffmpeg-skill / pixelfx / manimgx / vibe-knowledge-film）逐个实渲速记 | 每条都是实测过的坑：无损切的包精度、check 的 verified 误读、manimgx 按帧号抽帧、vibe 的字体槽位顶替 |
+| [新技能实测-v140.md](新技能实测-v140.md) | v1.4.0 三集成（Multiplane / rea-video / shotcraft 参考层）在一支越野车广告上的实测速记 | rea-video 不装 OCR 附加包字幕层静默失效；Multiplane 透明卡进 three 层会污染景深；锚图画幅会传染给生成片段 |
 
 ---
 

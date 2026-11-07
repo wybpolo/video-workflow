@@ -10,14 +10,14 @@ bingkis 的 AI 视频制作工作流：调研选型后的去重技能栈 + 总�
 | 路线 | 内容 | 引擎 |
 |---|---|---|
 | A 艺术解说 | 艺术风格动画、Kurzgesagt/Vox/白板/3b1b 风解说片；子路线：无旁白知识长片 | huashu-art-motion（上游，install.sh 按锁定 commit 拉取）；子路线 vibe-knowledge-film（vendored） |
-| B 通用设计 | 产品片、数据片、标题卡、竖屏信息片 | HyperFrames（技能已 vendored 在 skills/，二进制资源由 install.sh 补齐） |
+| B 通用设计 | 产品片、数据片、标题卡、竖屏信息片 | HyperFrames（技能已 vendored 在 skills/，二进制资源由 install.sh 补齐）；高质量选项 Multiplane（运动模糊/景深/确定性自检，引擎由 install.sh 装到 video-studio/apps，按片二选一） |
 | C 图解素材 | 技术概念等距图解；真数学/3D 动画；像素特效素材 | anatomy（上游，install.sh 拉取）；manimgx（技能 vendored，引擎 uv 装）；pixelfx（vendored） |
 | D 全自动短视频 | 主题→脚本→素材→配音→字幕量产 | MoneyPrinterTurbo（上游，install.sh 拉取；需自备 LLM key + Pexels key） |
 | E 生成片段 | 文/图生视频实拍感片段 | Muse 原生视频生成（muse.ai 内免 key，见下节）；外部环境备选 Runway Dev API |
 | F 素材再加工 | 剪辑、转写、字幕、配音 | ffmpeg-skill 契约脚本（vendored）+ studio/scripts |
 | G 剪映草稿 | 成片转可编辑草稿精修 | pyJianYingDraft（studio/scripts/make_jianying_draft.py） |
 | H 短剧生产 | 小说→大纲→角色→美术→剧本→分镜→成片 | shuohao-skills 7 技能（vendored）+ 原生生成出片 |
-| I 参考复刻 | 拆解参考片结构 → 换变量量产变体 | 纯方法路线（结构卡 + E 路线生成） |
+| I 参考复刻 | 拆解参考片结构 → 换变量量产变体 | rea-video 机读拆解前置（技能 vendored，引擎由 install.sh 装进 studio .venv，须连 rapidocr-onnxruntime）+ 结构卡 + E 路线生成 |
 
 原则：一支片只用一个渲染引擎（huashu 与 HyperFrames 不同时用）；含图表先过 dataviz。
 
