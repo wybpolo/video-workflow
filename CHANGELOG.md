@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.0 — 2026-11-14
+
+第四批评估（3 项，重点「卡字」）后的集成，验证载体为《绞盘自救》卡字演示片与《汽车技法样片 v2.2》卡字率基线（本地 video-studio/projects/kazi-demo/，不入库）：
+
+- **新增 references/卡字规范.md**（A/B/J 讲解段引用）：稿子标记语法（*关键词*/{念法=>字幕}/停顿/分节）、timeline.json 逐字时间表契约、hit −3 帧 / appearBy −12 帧等量化时间常数（60fps 基准含 30fps 换算）、十个画动词落点表、关键词独立事件导演法（语义九分、滚动三行上限）、字幕规则、卡字率验收门。方法提炼自 kazi（MIT/CC BY 4.0，署名见 UPSTREAM）与编辑台的关键词导演法（仅方法）；本规范升级并取代原「词锚」口径。
+- **工具 vendor（studio/scripts/）**：kazi 的跨平台小工具 kazi_check.py（卡字率：关键词窗口动量 ≥ 前一秒 1.5 倍 + 随机基线 lift，补上验收体系缺失的音画同步维度）、caption_check.py、lint_script.py、pace.py、tempo.py 原样入库（MIT；新增依赖 soundfile 已装进 studio venv）。kazi 的 Remotion 渲染层与苹果 MLX 对齐/配音管线不采用——对齐由我们已有的 faster-whisper 词级时间戳组装时间表。
+- **只登记引用**：awesome-code-animation（CC0）——443 个外部项目按 38 画风的活索引（每周自动刷新），作画风选型雷达查在线版，不 vendored 链接表；其收录的 fy-code-animation、mg-styles、lemo 等我们已持有正文或已吸收。
+- **不采用**：编辑台 video-editing-full-pipeline-skill——个人非商业许可（禁商用与再分发）+ Remotion 引擎双否决，代码与文本零引用；仅三点方法（关键词独立事件导演法、剪后 cut-map 时间重映射、音效覆盖审计）以自有文字并入卡字规范第八节及相关路线。
+
 ## v1.5.0 — 2026-11-07
 
 新增汽车垂直路线与契约层，验证载体为《汽车技法样片》v1/v2/v2.1/v2.2（本地 video-studio/projects/car-techniques-demo*，不入库；v1 用户评分 70）：

@@ -33,3 +33,6 @@ install.sh 按下表 commit 拉取/恢复。升级上游时先改这里、验证
 - HyperFrames 渲染需 TMPDIR 指到大磁盘目录、HYPERFRAMES_BROWSER_PATH 指到 Playwright 无头 Chrome、GSAP 等 CDN 库本地化（jsdelivr 在目标网络不可用）。
 - edge-tts 在 Muse 云 VM 被出口代理掐断，在 Windows 本机可用。
 | car-video-production（契约层） | 用户私有仓 kicpolo/car-video-production（2026-11-07 由仓主以 zip 提供源码） | —（私有仓，无公开 commit） | **无 LICENSE 文件**；按仓主本人指示整合 | plan 契约（car-video.plan.v1）要点与跟踪/检索/验收纪律吸收进总控 J 路线；check_plan.py、verify_video.py 两脚本原样 vendored 在 studio/scripts/；其 ima RAG 服务、光流 Tracker 工作台、卡片前端为仓主 Windows 本机组件，不在包内、未入库 |
+| kazi（卡字，方法+工具） | github.com/syydaniel/kazi | 1a4654c76bb6c1b2b21f6b473814ff067db7c151 | 代码 MIT / 文档 CC BY 4.0 | 方法吸收进总控 references/卡字规范.md（署名：提炼自 kazi 文档）；跨平台工具 kazi_check/caption_check/lint_script/pace/tempo 原样 vendored 在 studio/scripts/（依赖 soundfile）；其 Remotion 渲染层与 MLX 绑定对齐管线**不采用**（与 HyperFrames 同层冲突 / 本机不可跑），对齐由 faster-whisper 词级时间戳自研组装 |
+| awesome-code-animation（画风图鉴） | github.com/syydaniel/awesome-code-animation | 747af3d8a3548b5e75e332a5317f1459fd59760d | CC0 1.0 | **只登记引用不 vendored**：443 个外部项目的链接索引（38 画风），每周刷新，选画风/找新工具时查在线版 |
+| video-editing-full-pipeline-skill（编辑台） | github.com/shenwang2/video-editing-full-pipeline-skill | b7185498bf7329c18555b713f0d0d8ff30b6fb2a | 个人非商业许可（禁商用/禁再分发） | **不采用**：许可证 + Remotion 引擎双否决；仅关键词导演法、cut-map 重映射、音效覆盖审计三点方法以自有文字吸收进卡字规范，未引用其文本与代码 |
